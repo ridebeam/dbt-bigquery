@@ -5,3 +5,4 @@ It is currently based on v1.4.1 plus the following cherry-picked pull requests:
 - https://github.com/dbt-labs/dbt-bigquery/pull/578 (not merged yet): To add support for configuring dataproc
 - https://github.com/dbt-labs/dbt-bigquery/pull/482: 578 depends on this
 - https://github.com/dbt-labs/dbt-bigquery/pull/423: 578 depends on this
+- https://github.com/dbt-labs/dbt-bigquery/pull/591: To fix regression that broke insert_overwrite
