@@ -13,8 +13,9 @@ import google.auth
 import google.auth.exceptions
 import google.cloud.bigquery
 import google.cloud.exceptions
-from google.api_core import retry, client_info
+from google.api_core import retry, client_info, page_iterator
 from google.auth import impersonated_credentials
+from google.cloud import storage
 from google.oauth2 import (
     credentials as GoogleCredentials,
     service_account as GoogleServiceAccountCredentials,
@@ -547,6 +548,52 @@ class BigQueryConnectionManager(BaseConnectionManager):
         # auto_begin is ignored on bigquery, and only included for consistency
         _, iterator = self.raw_execute(sql, fetch="fetch_result", use_legacy_sql=True)
         return self.get_table_from_response(iterator)
+
+    def _list_directories(self, client, bucket_name, prefix):
+        def item_to_value(iterator, item):
+            return item
+
+        if prefix and not prefix.endswith('/'):
+            prefix += '/'
+
+        extra_params = {
+            "projection": "noAcl",
+            "prefix": prefix,
+            "delimiter": '/'
+        }
+
+        path = "/b/" + bucket_name + "/o"
+
+        iterator = page_iterator.HTTPIterator(
+            client=client,
+            api_request=client._connection.api_request,
+            path=path,
+            items_key='prefixes',
+            item_to_value=item_to_value,
+            extra_params=extra_params,
+        )
+
+        return [x for x in iterator]
+
+    def get_hive_max_partition(self, bucket_name, prefix):
+        def get_partition(d):
+            dt = d.split('/')[-2]
+            return dt.split('=')[1]
+
+        conn = self.get_thread_connection()
+
+        client = storage.Client(
+            project=conn.credentials.execution_project,
+            credentials=self.get_credentials(conn.credentials),
+        )
+
+        dts = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix, gcs=self.storage_client)], reverse=True)
+        max_dt = dts[0]
+
+        hrs = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix+"dt="+max_dt+"/", gcs=client)], reverse=True)
+        max_hr = hrs[0]
+
+        return {'dt': max_dt, 'hr': max_hr}
 
     def copy_bq_table(self, source, destination, write_disposition):
         conn = self.get_thread_connection()
