@@ -900,3 +900,6 @@ class BigQueryAdapter(BaseAdapter):
             "cluster": ClusterDataprocHelper,
             "serverless": ServerlessDataProcHelper,
         }
+
+    def get_hive_max_partition(self, bucket_name, prefix):
+        return self.connections.get_hive_max_partition(bucket_name, prefix)
