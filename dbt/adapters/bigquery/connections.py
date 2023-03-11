@@ -587,10 +587,10 @@ class BigQueryConnectionManager(BaseConnectionManager):
             credentials=self.get_credentials(conn.credentials),
         )
 
-        dts = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix, gcs=self.storage_client)], reverse=True)
+        dts = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix)], reverse=True)
         max_dt = dts[0]
 
-        hrs = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix+"dt="+max_dt+"/", gcs=client)], reverse=True)
+        hrs = sorted([get_partition(d) for d in self._list_directories(client, bucket_name, prefix+"dt="+max_dt+"/")], reverse=True)
         max_hr = hrs[0]
 
         return {'dt': max_dt, 'hr': max_hr}
