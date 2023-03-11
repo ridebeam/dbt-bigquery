@@ -901,5 +901,6 @@ class BigQueryAdapter(BaseAdapter):
             "serverless": ServerlessDataProcHelper,
         }
 
+    @available.parse(lambda *a, **k: "")
     def get_hive_max_partition(self, bucket_name, prefix):
         return self.connections.get_hive_max_partition(bucket_name, prefix)
