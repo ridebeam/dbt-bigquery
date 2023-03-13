@@ -664,6 +664,14 @@ class BigQueryConnectionManager(BaseConnectionManager):
         dataset_ref = google.cloud.bigquery.DatasetReference(database, schema)
         return google.cloud.bigquery.TableReference(dataset_ref, table_name)
 
+    @staticmethod
+    def routine_ref(database, schema, routine_name):
+        return google.cloud.bigquery.RoutineReference.from_api_repr({
+            'projectId': database,
+            'datasetId': schema,
+            'routineId': routine_name,
+        })
+
     def get_bq_table(self, database, schema, identifier):
         """Get a bigquery table for a schema/model."""
         conn = self.get_thread_connection()
