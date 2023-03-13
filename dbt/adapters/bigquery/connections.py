@@ -548,12 +548,13 @@ class BigQueryConnectionManager(BaseConnectionManager):
         _, iterator = self.raw_execute(sql, fetch="fetch_result", use_legacy_sql=True)
         return self.get_table_from_response(iterator)
 
-    def get_current_date(self):
+    def get_current_date(self) -> str:
         sql = "SELECT TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY) AS date"
         sql = self._add_query_comment(sql)
         # auto_begin is ignored on bigquery, and only included for consistency
         _, iterator = self.raw_execute(sql, fetch="fetch_result")
-        return self.get_table_from_response(iterator)
+        table = self.get_table_from_response(iterator)
+        return table.rows[0]['date']
 
     def copy_bq_table(self, source, destination, write_disposition):
         conn = self.get_thread_connection()
