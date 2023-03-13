@@ -606,9 +606,9 @@ class BigQueryConnectionManager(BaseConnectionManager):
     @staticmethod
     def routine_ref(database, schema, routine_name):
         return google.cloud.bigquery.RoutineReference.from_api_repr({
-            'project': database,
-            'dataset_id': schema,
-            'routine_id': routine_name,
+            'projectId': database,
+            'datasetId': schema,
+            'routineId': routine_name,
         })
 
     def get_bq_table(self, database, schema, identifier):
