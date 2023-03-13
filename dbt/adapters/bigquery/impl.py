@@ -672,6 +672,9 @@ class BigQueryAdapter(BaseAdapter):
     def get_table_ref_from_relation(self, relation: BaseRelation):
         return self.connections.table_ref(relation.database, relation.schema, relation.identifier)
 
+    def get_routine_ref_from_relation(self, relation: BaseRelation):
+        return self.connections.routine_ref(relation.database, relation.schema, relation.identifier)
+
     def _update_column_dict(self, bq_column_dict, dbt_columns, parent=""):
         """
         Helper function to recursively traverse the schema of a table in the
@@ -879,8 +882,12 @@ class BigQueryAdapter(BaseAdapter):
         client = conn.handle
         GrantTarget.validate(grant_target_dict)
         grant_target = GrantTarget.from_dict(grant_target_dict)
+
         if entity_type == "view":
             entity = self.get_table_ref_from_relation(entity).to_api_repr()
+        elif entity_type == "routine":
+            entity = self.get_routine_ref_from_relation(entity).to_api_repr()
+
         with _dataset_lock:
             dataset_ref = self.connections.dataset_ref(grant_target.project, grant_target.dataset)
             dataset = client.get_dataset(dataset_ref)
