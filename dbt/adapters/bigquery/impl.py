@@ -1041,3 +1041,7 @@ class BigQueryAdapter(BaseAdapter):
         :param str sql: The sql to validate
         """
         return self.connections.dry_run(sql)
+
+    @available.parse(lambda *a, **k: "")
+    def get_current_date(self) -> str:
+        return self.connections.get_current_date()
