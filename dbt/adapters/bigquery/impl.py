@@ -907,3 +907,7 @@ class BigQueryAdapter(BaseAdapter):
             "cluster": ClusterDataprocHelper,
             "serverless": ServerlessDataProcHelper,
         }
+
+    @available.parse(lambda *a, **k: "")
+    def get_current_date(self) -> str:
+        return self.connections.get_current_date()
