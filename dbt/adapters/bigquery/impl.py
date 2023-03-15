@@ -1013,3 +1013,7 @@ class BigQueryAdapter(BaseAdapter):
             return f"{c} not enforced" if c else None
 
         return c
+
+    @available.parse(lambda *a, **k: "")
+    def get_current_date(self) -> str:
+        return self.connections.get_current_date()
