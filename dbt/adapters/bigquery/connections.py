@@ -613,7 +613,7 @@ class BigQueryConnectionManager(BaseConnectionManager):
         sql = "SELECT FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY)) AS date"
         sql = self._add_query_comment(sql)
         # auto_begin is ignored on bigquery, and only included for consistency
-        _, iterator = self.raw_execute(sql, fetch="fetch_result")
+        _, iterator = self.raw_execute(sql)
         table = self.get_table_from_response(iterator)
         return table.rows[0]['date']
 
